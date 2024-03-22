@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Easter Card</title>
+  <!-- Google Font-->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.0.1/confetti.min.js"></script>
+
+</head>
+<body>
+  <div id="quiz">
+    <h2>Easter Card Generator</h2>
+    <label for="frontInput">Front Text:</label>
+    <input type="text" id="frontInput" /><br>
+    <label for="insideInput">Inside Text:</label>
+    <input type="text" id="insideInput" /><br>
+    <label for="imageSelect">Select Front Image:</label>
+    <select id="imageSelect">
+      <option value="bunny.jpg">Bunny</option>
+      <option value="egg.jpg">Egg</option>
+      <option value="cross.jpg">Cross</option>
+    </select><br>
+    <label for="textPosition">Text Position:</label><br>
+    <input type="radio" id="textPositionTop" name="textPosition" value="top">
+    <label for="textPositionTop">Top</label><br>
+    <input type="radio" id="textPositionBottom" name="textPosition" value="bottom" checked>
+    <label for="textPositionBottom">Bottom</label><br>
+    <label for="textColor">Text Color:</label>
+    <select id="textColor">
+      <option value="pink">Light Pink</option>
+      <option value="blue">Blue</option>
+      <option value="green">Green</option>
+    </select>
+    <label for="signatureCanvas">Signature:</label><br>
+    
+    <canvas id="signatureCanvas" width="300" height="100" background-color="white"></canvas><br>
+    <button onclick="generateCard()">Generate Card</button>
+  </div>
+
+  <div id="card" style="display: none;">
+    <div class="card">
+      <div class="outside">
+        <div class="front">
+          <img id="frontImage" src="" alt="Front Image">
+          <p id="frontText"></p>
+        </div>
+        <div class="back"></div>
+      </div>
+      <div class="inside">
+        <p id="insideText"></p>
+        <h1></h1>
+        <canvas id="signatureDisplay" width="300" height="100"></canvas>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // Variables for signature canvas
+    var signatureCanvas = document.getElementById("signatureCanvas");
+    var signatureCtx = signatureCanvas.getContext("2d");
+    var isDrawing = false;
+    var lastX = 0;
+    var lastY = 0;
+
+    // Mouse event listeners for drawing signature
+    signatureCanvas.addEventListener("mousedown", startDrawing);
+    signatureCanvas.addEventListener("mousemove", draw);
+    signatureCanvas.addEventListener("mouseup", endDrawing);
+    signatureCanvas.addEventListener("mouseout", endDrawing);
+
+    function startDrawing(e) {
+      isDrawing = true;
+      [lastX, lastY] = [e.offsetX, e.offsetY];
+    }
+
+    function draw(e) {
+      if (!isDrawing) return;
+      signatureCtx.strokeStyle = "#000"; // Color of the signature
+      signatureCtx.lineJoin = "round";
+      signatureCtx.lineCap = "round";
+      signatureCtx.lineWidth = 2;
+      signatureCtx.beginPath();
+      signatureCtx.moveTo(lastX, lastY);
+      signatureCtx.lineTo(e.offsetX, e.offsetY);
+      signatureCtx.stroke();
+      [lastX, lastY] = [e.offsetX, e.offsetY];
+    }
+    function generateCard() {
+      // Trigger confetti animation
+      confetti.start();
+
+      var frontInput = document.getElementById("frontInput").value;
+      var insideInput = document.getElementById("insideInput").value;
+      var selectedImage = document.getElementById("imageSelect").value;
+      var textPosition = document.querySelector('input[name="textPosition"]:checked').value;
+      var textColor = document.getElementById("textColor").value;
+
+      document.getElementById("frontText").textContent = frontInput;
+      document.getElementById("insideText").textContent = insideInput;
+      document.getElementById("frontImage").src = selectedImage;
+
+      var frontText = document.getElementById("frontText");
+      var insideText = document.getElementById("insideText");
+      frontText.style.color = textColor;
+      insideText.style.color = textColor; // Apply selected color to inside text
+
+      if (textPosition === "top") {
+        document.querySelector('.front').insertBefore(frontText, document.getElementById('frontImage'));
+      } else {
+        document.querySelector('.front').appendChild(frontText);
+      }
+
+      // Draw signature on the display canvas
+      var signatureDisplayCanvas = document.getElementById("signatureDisplay");
+      var signatureDisplayCtx = signatureDisplayCanvas.getContext("2d");
+      signatureDisplayCtx.drawImage(signatureCanvas, 0, 0);
+
+      // Stop confetti after a short delay
+      setTimeout(() => {
+        confetti.stop();
+        document.getElementById("quiz").style.display = "none";
+        document.getElementById("card").style.display = "block";
+      }, 3000); // Adjust the delay time as needed
+    }
+
+    function endDrawing() {
+      isDrawing = false;
+    }
+
+    function generateCard() {
+      var frontInput = document.getElementById("frontInput").value;
+      var insideInput = document.getElementById("insideInput").value;
+      var selectedImage = document.getElementById("imageSelect").value;
+      var textPosition = document.querySelector('input[name="textPosition"]:checked').value;
+      var textColor = document.getElementById("textColor").value;
+      
+      document.getElementById("frontText").textContent = frontInput;
+      document.getElementById("insideText").textContent = insideInput;
+      document.getElementById("frontImage").src = selectedImage;
+      
+      var frontText = document.getElementById("frontText");
+      var insideText = document.getElementById("insideText");
+      frontText.style.color = textColor;
+      insideText.style.color = textColor; // Apply selected color to inside text
+      
+      if (textPosition === "top") {
+        document.querySelector('.front').insertBefore(frontText, document.getElementById('frontImage'));
+      } else {
+        document.querySelector('.front').appendChild(frontText);
+      }
+
+      // Draw signature on the display canvas
+      var signatureDisplayCanvas = document.getElementById("signatureDisplay");
+      var signatureDisplayCtx = signatureDisplayCanvas.getContext("2d");
+      signatureDisplayCtx.drawImage(signatureCanvas, 0, 0);
+
+      document.getElementById("quiz").style.display = "none";
+      document.getElementById("card").style.display = "block";
+    }
+  </script>
+</body>
+</html>
